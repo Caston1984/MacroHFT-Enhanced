@@ -83,5 +83,5 @@ This project builds upon, refactors, and enhances the open-source codebase and r
 
 This repository showcases systems architecture and quantitative research capabilities. **Accredited investors, quantitative funds, or strategic partners interested in private performance logs, live forward-testing validation, or proprietary deployment under NDA are invited to reach out directly.**
 
-* **Author:** Caston Nyabadza (IT Risk Manager | MSc Computer Science - Reinforcement Learning, Wits University)
+* **Author:** Caston Nyabadza (AI/ML Risk Manager | MSc Computer Science - Reinforcement Learning, Wits University)
 * **Professional Contact:** Available via GitHub profile / LinkedIn.
