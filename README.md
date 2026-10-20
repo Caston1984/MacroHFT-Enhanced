@@ -41,43 +41,47 @@ MacroHFT-Enhanced/
 ├── scripts/                 # CLI entry-points for training and out-of-sample backtesting
 ├── .gitignore               # Strict exclusion of raw proprietary data & model weights
 ├── requirements.txt         # Pinned system dependencies
-└── README.md                # Project Documentation ```
+└── README.md                # Project Documentation 
+```
 
 ---
 
-🙏 Acknowledgements & Baseline Attribution
-This project builds upon, refactors, and enhances the open-source codebase and research framework introduced by the authors of MacroHFT (KDD 2024). We sincerely thank the original authors for their foundational work:
+## 🙏 Acknowledgements & Baseline Attribution
 
-Official Original Repository: ZONG0004/MacroHFT
+This project builds upon, refactors, and enhances the open-source codebase and research framework introduced by the authors of **MacroHFT** (KDD 2024). We sincerely thank the original authors for their foundational work:
 
-Research Paper Citation:
+* **Official Original Repository:** [ZONG0004/MacroHFT](https://github.com/ZONG0004/MacroHFT)
+* **Research Paper Citation:**
+  > **MacroHFT: Memory Augmented Context-aware Reinforcement Learning On High Frequency Trading**  
+  > *Chuqiao Zong, Chaojie Wang, Molei Qin, Lei Feng, Xinrun Wang, and Bo An*  
+  > *Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD 2024)*  
+  > * [arXiv:2406.14537 [cs.LG]](https://arxiv.org/abs/2406.14537)
 
-MacroHFT: Memory Augmented Context-aware Reinforcement Learning On High Frequency Trading
+---
 
-Chuqiao Zong, Chaojie Wang, Molei Qin, Lei Feng, Xinrun Wang, and Bo An
+## 📈 Performance & Benchmark Overview
 
-Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD 2024)
+*(Note: Live proprietary alpha performance metrics and raw data sources are restricted. The benchmark comparisons below reflect out-of-sample evaluations conducted on standardized historical LOB segments).*
 
-arXiv:2406.14537 [cs.LG]
+| Evaluation Metric | Baseline MacroHFT (KDD 2024) | MacroHFT-Pro (Ours) | Improvement / Delta |
+| :--- | :--- | :--- | :--- |
+| **Sharpe Ratio** | Baseline | **Enhanced** | $\mathbf{+} \mathbf{2 8 \%}$ |
+| **Max Drawdown** | Baseline | **Optimized** | $\mathbf{- 3 5 \%}$ Reduction |
+| **Execution Latency** | Standard | **Optimized** | Sub-millisecond tensor loops |
 
-📈 Performance & Benchmark Overview
-(Note: Live proprietary alpha performance metrics and raw data sources are restricted. The benchmark comparisons below reflect out-of-sample evaluations conducted on standardized historical LOB segments).
+---
 
-Evaluation Metric	Baseline MacroHFT (KDD 2024)	MacroHFT-Pro (Ours)	Improvement / Delta
-Sharpe Ratio	Baseline	Enhanced	+28%
-Max Drawdown	Baseline	Optimized	−35% Reduction
-Execution Latency	Standard	Optimized	Sub-millisecond tensor loops
+## 🔮 Future Roadmap & Commercial Expansion
 
-🔮 Future Roadmap & Commercial Expansion
-Multi-Asset Cross-Exchange Scaling: Expanding LOB state representations across fragmented liquidity pools.
+* **Multi-Asset Cross-Exchange Scaling:** Expanding LOB state representations across fragmented liquidity pools.
+* **C++ / Cython Integration:** Bridging Python training modules with low-latency C++ execution bridges for live deployment.
+* **Advanced Adversarial Robustness:** Incorporating stress-testing against synthetic flash-crash scenarios.
 
-C++ / Cython Integration: Bridging Python training modules with low-latency C++ execution bridges for live deployment.
+---
 
-Advanced Adversarial Robustness: Incorporating stress-testing against synthetic flash-crash scenarios.
+## 💼 Investor & Professional Inquiries
 
-💼 Investor & Professional Inquiries
-This repository showcases systems architecture and quantitative research capabilities. Accredited investors, quantitative funds, or strategic partners interested in private performance logs, live forward-testing validation, or proprietary deployment under NDA are invited to reach out directly.
+This repository showcases systems architecture and quantitative research capabilities. **Accredited investors, quantitative funds, or strategic partners interested in private performance logs, live forward-testing validation, or proprietary deployment under NDA are invited to reach out directly.**
 
-Author: Caston Nyabadza (Risk Manager | MSc Computer Science - Reinforcement Learning, Wits University)
-
-Professional Contact: Available via GitHub profile / LinkedIn.
+* **Author:** Caston Nyabadza (IT Risk Manager | MSc Computer Science - Reinforcement Learning, Wits University)
+* **Professional Contact:** Available via GitHub profile / LinkedIn.
