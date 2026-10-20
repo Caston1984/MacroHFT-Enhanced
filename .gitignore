@@ -1,0 +1,28 @@
+# Python / Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.env
+
+# Proprietary Data & Raw Inputs (Protected)
+data/raw/
+*.csv
+*.parquet
+*.h5
+*.zarr
+
+# Model Checkpoints & Weights (Protected)
+*.pt
+*.pth
+weights/
+checkpoints/
+outputs/
+logs/
+
+# IDE & OS Specific
+.vscode/
+.idea/
+.DS_Store
