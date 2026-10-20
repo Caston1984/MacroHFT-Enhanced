@@ -42,3 +42,14 @@ MacroHFT-Enhanced/
 ├── .gitignore               # Strict exclusion of raw proprietary data & model weights
 ├── requirements.txt         # Pinned system dependencies
 └── README.md                # Project Documentation
+
+---
+
+## 🙏 Acknowledgements & Baseline Attribution
+
+This project builds upon and enhances the open-source architecture introduced by the researchers of **MacroHFT** (KDD 2024). We express our gratitude to the original authors for their foundational work in memory-augmented context-aware reinforcement learning for high-frequency trading:
+
+> **MacroHFT: Memory Augmented Context-aware Reinforcement Learning On High Frequency Trading**  
+> *Chuqiao Zong, Chaojie Wang, Molei Qin, Lei Feng, Xinrun Wang, and Bo An*  
+> *Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD 2024)*  
+> [arXiv:2406.14537 [cs.LG]](https://arxiv.org/abs/2406.14537)
