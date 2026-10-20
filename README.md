@@ -27,21 +27,22 @@ While the baseline architecture establishes memory-augmented context-aware reinf
 ## 🏗️ Repository Architecture
 
 ```text
-MacroHFT-Enhanced/
-├── assets/                  # Architecture diagrams & performance benchmark charts
-├── configs/                 # Hierarchical YAML configuration files
-├── data/                    # Data pipelines & sample mock datasets
-│   └── processed/           # Sample schema data for pipeline verification
-├── src/                     # Core Production Source Code
-│   ├── environment/         # LOB simulation & market state spaces
-│   ├── models/              # Memory-augmented networks & attention mechanisms
-│   ├── agents/              # Reinforcement learning training & execution loops
-│   └── execution/           # Backtesting engine & risk management constraints
-├── tests/                   # Automated unit & integration testing suite (pytest)
-├── scripts/                 # CLI entry-points for training and out-of-sample backtesting
-├── .gitignore               # Strict exclusion of raw proprietary data & model weights
-├── requirements.txt         # Pinned system dependencies
-└── README.md                # Project Documentation 
+MacroHFT_Algo/
+├── data_bitmex/            # BitMEX L2 spot market data (Scheduled for removal / exchange closure)
+├── data_bybit/             # Bybit spot L2 market data and feature lists
+├── data_futures/           # Binance futures L2 market data and feature lists
+├── env/                    # RL market simulation environments (BitMEX, Bybit, Spot, Futures)
+├── l2_collector/           # L2 order book data collection, streaming & service scripts
+├── logs/                   # Training and runtime execution logs
+├── model/                  # Neural network architecture definitions (net.py)
+├── preprocess/             # Data preprocessing, chunk validation, and feature engineering
+├── result/                 # Execution results and low-level futures outputs
+├── RL/                     # Reinforcement learning agents and utilities
+├── scripts/                # Bash execution scripts for training and decomposition
+├── tools/                  # Demonstration and utility tools
+├── environment.yml         # Conda environment dependency configuration
+├── macrohft_data.tar.gz    # Archived dataset bundle
+└── README_PLACEMENT.txt    # Documentation placement guide
 ```
 
 ---
