@@ -8,17 +8,13 @@ Production-grade implementation of the MacroHFT reinforcement learning trading s
 
 ---
 
-## ⚠️ Critical Bugs Fixed
+## ⚠️ Critical Bug Fixed
 
-This enhanced implementation fixes **5 critical bugs** found in the original codebase that prevented proper training:
+This enhanced implementation fixes **1 critical bug** found in the original codebase:
 
-1. 🔴 **Hardcoded `alpha=0`** - Training ignored `--alpha` CLI parameter, breaking KL supervision
-2. 🟡 **3-action vs 2-action mismatch** - Architecture deviated from paper's 2-action design
-3. 🟡 **Q-table shape errors** - Runtime crashes after action space changes  
-4. 🟠 **No epsilon decay** - Exploration rate never decreased, causing unstable learning
-5. 🟢 **Monitoring display bug** - Showed -97% returns for profitable agents
+1. 🔴 **Hardcoded `alpha=0`** - Training ignored `--alpha` CLI parameter, breaking KL supervision completely
 
-**Impact:** Without these fixes, training with `--alpha > 0` produces incorrect results.  
+**Impact:** Without this fix, training with `--alpha > 0` produces incorrect results (agent always trains with alpha=0).  
 **See full details:** [Known Bugs Section](#-known-bugs-in-original-code)
 
 ---
@@ -362,9 +358,9 @@ python scripts/monitor_convergence.py \
 
 ## 🐛 Known Bugs in Original Code
 
-### Critical Bugs Fixed
+### Critical Bug Fixed
 
-#### 1. **Hardcoded Alpha Parameter in Training Environment** 🔴 **CRITICAL**
+#### **Hardcoded Alpha Parameter in Training Environment** 🔴 **CRITICAL**
 
 **Location:** All low-level agent files  
 - `RL/agent/low_level_bybit.py` (line 306)
@@ -386,10 +382,13 @@ train_env = Training_Env(
 ```
 
 **Impact:**
-- **Severity:** CRITICAL - Breaks KL-divergence supervision
-- **Symptom:** Training ignores `--alpha` command-line argument
-- **Result:** All training runs use alpha=0 (pure RL) regardless of CLI parameter
-- **Affects:** Any training with `--alpha > 0` produces incorrect results
+- **Severity:** CRITICAL - Completely breaks KL-divergence supervision
+- **Symptom:** Training silently ignores `--alpha` command-line argument
+- **Result:** ALL training runs use alpha=0 (pure RL) regardless of CLI parameter
+- **Affects:** Any experiment with `--alpha > 0` produces incorrect results
+
+**Discovery:**
+This bug was discovered when training with `--alpha 1` showed the same learning curve as `--alpha 0`, indicating the KL supervision was never being applied.
 
 **Fix:**
 ```python
@@ -407,168 +406,14 @@ train_env = Training_Env(
 **Verification:**
 ```bash
 # Before fix: alpha parameter is ignored
-python RL/agent/low_level_bybit.py --alpha 1   # Actually trains with alpha=0
+python RL/agent/low_level_bybit.py --alpha 1   # Silently trains with alpha=0
 
 # After fix: alpha parameter is respected
-python RL/agent/low_level_bybit.py --alpha 1   # Trains with alpha=1 (KL supervision)
+python RL/agent/low_level_bybit.py --alpha 1   # Correctly trains with alpha=1 (KL supervision)
 ```
 
----
-
-#### 2. **3-Action vs 2-Action Mismatch** 🟡 **HIGH**
-
-**Location:**  
-- `env/low_level_env_bybit.py`
-- `RL/agent/low_level_bybit.py`
-
-**Bug:**
-Original implementation uses 3-action space (SHORT/FLAT/LONG) but paper methodology requires 2-action space (FLAT/LONG) for futures trading.
-
-**Evidence from Paper:**
-> "For futures markets, we use only FLAT and LONG positions to align with typical long-biased crypto strategies"
-
-**Impact:**
-- **Severity:** HIGH - Architecture mismatch with paper
-- **Symptom:** Agent learns SHORT actions that don't generalize
-- **Result:** Poor performance in bearish regimes (should stay FLAT, not SHORT)
-
-**Fix:**
-Changed to 2-action architecture throughout:
-- `num_action = 2` in environment initialization
-- Action space: `{0: FLAT, 1: LONG}`
-- Removed SHORT position logic
-
-**Verification:**
-```bash
-# Check action space
-grep "self.n_action" RL/agent/low_level_bybit.py
-# Should show: self.n_action = 2
-
-# Verify in environment
-grep "action_space" env/low_level_env_bybit.py
-# Should show: self.action_space = spaces.Discrete(2)
-```
-
----
-
-#### 3. **Missing Epsilon Decay Configuration** 🟠 **MEDIUM**
-
-**Location:** `RL/agent/low_level_bybit.py` (line ~50)
-
-**Bug:**
-```python
-parser.add_argument("--decay_length", type=int, default=0,  # ❌ Default 0 = no decay!
-                    help="Epsilon decay schedule length")
-```
-
-**Impact:**
-- **Severity:** MEDIUM - Prevents exploration-exploitation tradeoff
-- **Symptom:** Agent explores randomly for all 200 epochs
-- **Result:** Never converges to learned policy, oscillating performance
-
-**Fix:**
-```python
-parser.add_argument("--decay_length", type=int, default=30,  # ✅ Decay over 30 epochs
-                    help="Epsilon decay schedule length")
-```
-
-**Behavior:**
-- **Before:** ε stays at 0.9 (90% random) for entire training
-- **After:** ε decays 0.9 → 0.02 over 30 epochs (intelligent exploration)
-
-**Expected Impact:**
-- Faster convergence (less random noise in late epochs)
-- Stable performance after peak (exploitation phase)
-- Better final validation returns
-
----
-
-#### 4. **Q-Table Shape Mismatch After Action Space Change** 🟡 **HIGH**
-
-**Location:**  
-- `env/low_level_env_bybit.py`
-- `env/low_level_env_bitmex.py`
-
-**Bug:**
-After changing to 2-action architecture, Q-table oracle still initialized with 3 actions:
-
-```python
-# In env files
-self.q_value_table = pd.read_feather(...)  # Shape: (T, 3, 3) - old 3-action
-# But agent expects: (T, 2, 2) - new 2-action
-```
-
-**Impact:**
-- **Severity:** HIGH - Causes runtime crash
-- **Symptom:** `ValueError: cannot reshape array of size 3 into shape (2,)`
-- **Result:** Training fails on first epoch
-
-**Fix:**
-Changed Q-table initialization:
-```python
-# Old
-self.q_value_table = np.random.randn(len(self.df), 3, 3)  # ❌
-
-# New
-self.q_value_table = np.random.randn(len(self.df), num_action, num_action)  # ✅
-```
-
----
-
-#### 5. **Monitoring Script Return Calculation Bug** 🟢 **LOW**
-
-**Location:** `scripts/monitor_convergence.py`
-
-**Bug:**
-```python
-# Old: Incorrect return calculation
-return_pct = (margin - 1) * 100  # ❌ Wrong for margins < 1
-
-# Example: margin = 0.0304 (3.04% profit)
-# Buggy result: (0.0304 - 1) * 100 = -96.96% ❌
-```
-
-**Impact:**
-- **Severity:** LOW - Display bug only, doesn't affect training
-- **Symptom:** Shows -97% returns when agent is actually profitable
-- **Result:** Confusing monitoring output
-
-**Fix:**
-```python
-# New: Correct return calculation  
-return_pct = margin * 100  # ✅ Direct conversion
-
-# Example: margin = 0.0304
-# Correct result: 0.0304 * 100 = 3.04% ✅
-```
-
----
-
-### Bug Priority Matrix
-
-| Bug | Severity | Impact on Training | Impact on Results | Status |
-|-----|----------|-------------------|-------------------|--------|
-| Hardcoded alpha=0 | 🔴 CRITICAL | Breaks KL supervision | Incorrect learning | ✅ Fixed |
-| 3-action mismatch | 🟡 HIGH | Architecture deviation | Poor generalization | ✅ Fixed |
-| Q-table shape | 🟡 HIGH | Runtime crash | Training fails | ✅ Fixed |
-| No epsilon decay | 🟠 MEDIUM | Slow convergence | Unstable performance | ✅ Fixed |
-| Monitoring display | 🟢 LOW | None | Confusing UI | ✅ Fixed |
-
----
-
-### Testing After Fixes
-
-**Verification Steps:**
-1. ✅ Alpha parameter respected: `--alpha 1` trains with KL supervision
-2. ✅ 2-action space: Agent uses only FLAT/LONG (no SHORT)
-3. ✅ Q-table shape: No runtime errors on first epoch
-4. ✅ Epsilon decay: Exploration rate decreases 0.9→0.02 over 30 epochs
-5. ✅ Monitoring: Shows correct +3.04% instead of -97%
-
-**Benchmark Results After Fixes:**
-- Label_2 (bullish): **+3.04%** validation @ epoch 12
-- Label_0 (bearish): **-0.53%** validation @ epoch 28 (excellent loss avoidance)
-- Training stability: Convergence detected at epoch 42 (auto-stopped)
+**Implications:**
+This is the ONLY critical bug found in the original codebase. All other aspects of the implementation (2-action space, epsilon decay, etc.) were correctly implemented by the authors
 
 ---
 
